@@ -1,0 +1,255 @@
+<?php
+// Bắt sự kiện ^C (Ctrl+C)
+declare(ticks=1);
+pcntl_signal(SIGINT, function() {
+    echo "\n" . color("=> Cảm ơn bạn đã sử dụng tool! Hẹn gặp lại.\n", "1;32");
+    exit;
+});
+
+// Cấu hình
+$api_token = "68061e5e46b18342d437f946"; // Thay bằng API token Link4m của bạn
+$your_domain = "https://dichvukey.4pu.com/?ma=";
+$key_file = "saved_key.txt";
+$link_file = "saved_link.txt";
+date_default_timezone_set('Asia/Ho_Chi_Minh');
+
+// Hàm hiển thị từ từ
+function slowEcho($text, $delay = 10000) {
+    foreach (str_split($text) as $char) {
+        echo $char;
+        usleep($delay);
+    }
+}
+
+// Hàm màu
+function color($text, $color_code) {
+    return "\033[".$color_code."m".$text."\033[0m";
+}
+function rainbow($text) {
+    $colors = ['1;31','1;33','1;32','1;36','1;34','1;35'];
+    $out = '';
+    $i = 0;
+    foreach (str_split($text) as $char) {
+        $out .= "\033[" . $colors[$i % count($colors)] . "m$char";
+        $i++;
+    }
+    return $out . "\033[0m";
+}
+
+// Logo & Info
+function showLogo() {
+    $logo = <<<LOGO
+______  ___   _   _ _____  _____ ___________ ___________  
+|  _  \/ _ \ | \ | |  __ \/  __ \  _  |  _  \  ___| ___ \ 
+| | | / /_\ \|  \| | |  \/| /  \/ | | | | | | |__ | |_/ / 
+| | | |  _  || . ` | | __ | |   | | | | | | |  __||    /  
+| |/ /| | | || |\  | |_\ \| \__/\ \_/ / |/ /| |___| |\ \  
+|___/ \_| |_/\_| \_/\____/ \____/\___/|___/ \____/\_| \_|
+LOGO;
+    slowEcho(rainbow($logo) . "\n", 1000); // hiển thị logo với tốc độ chậm hơn
+}
+//Lựa Chọn TOOL
+function drawMenuBox() {
+    $lines = [
+        "     CHỌN TOOL MUỐN CHẠY     ",
+        "  1. Tool TDS (traodoisub.com)  ",
+        "  2. Tool TTC (tuongtaccheo.com)",
+    ];
+    $border = "+------------------------------------+";
+    slowEcho(color($border . "\n", "1;36"));
+    foreach ($lines as $line) {
+        $padding = 36 - strlen(strip_tags($line));
+        $space = str_repeat(" ", $padding);
+        slowEcho(color("| " . $line . $space . " |\n", "1;33"));
+    }
+    slowEcho(color($border . "\n", "1;36"));
+    slowEcho(color("=> Nhập lựa chọn (1 hoặc 2): ", "1;35"));
+}
+function showInfo() {
+    $lines = [
+        color(" Tên tool: ", "1;36") . color("Tool Vượt Link + Key 24h", "1;33"),
+        color(" Tác giả: ", "1;36") . color("DangCoder", "1;35"),
+        color(" Website: ", "1;36") . color("https://codewebgiare.com", "1;32"),
+        color(" Liên hệ: ", "1;36") . color("fb.com/dangcoder.dev", "1;34"),
+    ];
+    $border = str_repeat("-", 50);
+    slowEcho(color("+$border+\n", "1;33"));
+    foreach ($lines as $line) {
+        $space = 48 - strlen(strip_tags($line));
+        $space = max($space, 0);
+        slowEcho(color("| ", "1;33") . color($line . str_repeat(" ", $space), "1;31") . color(" |\n", "1;33"));
+    }
+    slowEcho(color("+$border+\n", "1;33"));
+}
+
+// Key
+function generateKey() {
+    return 'Dangcoder_' . strtoupper(substr(str_shuffle('ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'), 0, 8));
+}
+function saveKey($key) {
+    global $key_file;
+    $data = ['key' => $key, 'time' => time()];
+    file_put_contents($key_file, json_encode($data));
+}
+function loadKey() {
+    global $key_file;
+    if (!file_exists($key_file)) return null;
+    return json_decode(file_get_contents($key_file), true);
+}
+function isKeyExpired($time) {
+    return (time() - $time) >= 86400;
+}
+
+// Link
+function saveLink($link) {
+    global $link_file;
+    file_put_contents($link_file, $link);
+}
+function loadLink() {
+    global $link_file;
+    if (!file_exists($link_file)) return null;
+    return file_get_contents($link_file);
+}
+
+// Bắt đầu
+system("clear");
+showLogo();
+showInfo();
+
+// Kiểm tra key
+$data = loadKey();
+if ($data && isset($data['key'], $data['time'])) {
+    $saved_key = $data['key'];
+    $saved_time = $data['time'];
+    $expire_time = $saved_time + 86400;
+    $expire_str = date("H:i:s - d/m/Y", $expire_time);
+
+    if (!isKeyExpired($saved_time)) {
+        slowEcho(color("=> Đã có key: ", "1;32") . color($saved_key, "1;33") . "\n");
+        slowEcho(color("=> Hạn Key là: ", "1;34").color("24H \n","1;33"));
+        slowEcho(color("=> Key còn hạn sử dụng. Vào tool đi...\n", "1;32"));
+        $input = $saved_key;
+    } else {
+        slowEcho(color("=> Key cũ đã hết hạn (quá 24 giờ)!\n", "1;31"));
+        slowEcho(color("=> Hết hạn lúc: ", "1;36") . color($expire_str, "1;33") . "\n");
+        slowEcho(color("=> Đang tạo key và link mới...\n", "1;33"));
+        if (file_exists($key_file)) @unlink($key_file);
+
+        $new_key = generateKey();
+        $ma = $your_domain . $new_key;
+
+        $api_url = "https://link2m.net/api-shorten/v2?api=$api_token&url=" . urlencode($ma);
+        $res = file_get_contents($api_url);
+        $data = json_decode($res, true);
+
+        if (!isset($data['shortenedUrl'])) {
+            slowEcho(color("Lỗi tạo link vượt! Kiểm tra API hoặc domain.\n", "1;31"));
+            exit;
+        }
+
+        $link = $data['shortenedUrl'];
+        saveLink($link);
+
+        slowEcho(color("\n=> Truy cập link sau để lấy mã key:\n", "1;36"));
+        slowEcho(color("$link\n\n", "1;33"));
+        slowEcho(color("Nhập key bạn thấy sau khi vượt link: ", "1;35"));
+        $input = trim(fgets(STDIN));
+
+        if ($input === $new_key) {
+            slowEcho(color("\n=> Key chính xác! Vào tool...\n\n", "1;32"));
+            saveKey($new_key);
+        } else {
+            slowEcho(color("Sai key! Vui lòng chạy lại tool và vượt link mới.\n", "1;31"));
+            @unlink($key_file);
+            exit;
+        }
+    }
+} else {
+    $new_key = generateKey();
+    $ma = $your_domain . $new_key;
+
+    $api_url = "https://link2m.net/api-shorten/v2?api=$api_token&url=" . urlencode($ma);
+    $res = file_get_contents($api_url);
+    $data = json_decode($res, true);
+
+    if (!isset($data['shortenedUrl'])) {
+        slowEcho(color("Lỗi tạo link vượt! Kiểm tra API hoặc domain.\n", "1;31"));
+        exit;
+    }
+
+    $link = $data['shortenedUrl'];
+    saveLink($link);
+
+    slowEcho(color("\n=> Truy cập link sau để lấy mã key:\n", "1;36"));
+    slowEcho(color("$link\n\n", "1;33"));
+    slowEcho(color("Nhập key bạn thấy sau khi vượt link: ", "1;35"));
+    $input = trim(fgets(STDIN));
+
+    if ($input === $new_key) {
+        slowEcho(color("\n=> Key chính xác! Vào tool...\n\n", "1;32"));
+        saveKey($new_key);
+    } else {
+        slowEcho(color("Sai key! Vui lòng chạy lại tool và vượt link mới.\n", "1;31"));
+        @unlink($key_file);
+        exit;
+    }
+}
+
+// === Vào tool ===
+// Gọi hàm hiển thị form chọn tool
+drawMenuBox();
+$choice = trim(fgets(STDIN));
+
+if ($choice == "1") {
+    slowEcho(color("\n=> Bạn đã chọn TOOL TDS\n", "1;36"));
+    slowEcho(color("Nhập access_token TDS: ", "1;33"));
+    $tds_token = trim(fgets(STDIN));
+
+    $tds_api = "https://traodoisub.com/api/?fields=profile&access_token=$tds_token";
+    $json = file_get_contents($tds_api);
+    $data = json_decode($json, true);
+
+    if (isset($data['success']) && $data['success'] == 200) {
+        slowEcho(color("=> Đăng nhập thành công!\n", "1;32"));
+        slowEcho(color("Tài khoản: ", "1;36") . $data['data']['user'] . "\n");
+        slowEcho(color("Số xu: ", "1;33") . $data['data']['xu'] . "\n");
+        slowEcho(color("Xu die: ", "1;31") . $data['data']['xudie'] . "\n");
+    } else {
+        slowEcho(color("=> Token TDS không hợp lệ hoặc lỗi kết nối API!\n", "1;31"));
+    }
+
+} elseif ($choice == "2") {
+    slowEcho(color("\n=> Bạn đã chọn TOOL TTC\n", "1;36"));
+    slowEcho(color("Nhập access_token TTC: ", "1;33"));
+    $ttc_token = trim(fgets(STDIN));
+
+    $ttc_api = "https://tuongtaccheo.com/logintoken.php";
+    $postdata = http_build_query(['access_token' => $ttc_token]);
+    $opts = [
+        "http" => [
+            "method" => "POST",
+            "header" => "Content-type: application/x-www-form-urlencoded",
+            "content" => $postdata
+        ]
+    ];
+    $context = stream_context_create($opts);
+    $result = file_get_contents($ttc_api, false, $context);
+    $data = json_decode($result, true);
+
+    if (isset($data['status']) && $data['status'] == 'success') {
+        slowEcho(color("=> Đăng nhập thành công!\n", "1;32"));
+        slowEcho(color("Tài khoản: ", "1;36") . $data['data']['user'] . "\n");
+        slowEcho(color("Số dư: ", "1;33") . $data['data']['sodu'] . "\n");
+
+        slowEcho(color("===> CHỌN NHIỆM VỤ MUỐN CHẠY <===\n", "1;31"));
+        slowEcho(color("1. Nhiệm vụ Flowers\n", "1;33"));
+        slowEcho(color("2. Nhiệm vụ Tim\n", "1;33"));
+        slowEcho(color("Nhập lựa chọn (1 hoặc 2): ", "1;35"));
+        $choice = trim(fgets(STDIN));
+        // Thêm phần xử lý nhiệm vụ ở đây nếu muốn
+    } else {
+        slowEcho(color("=> Token TTC không hợp lệ hoặc lỗi kết nối API!\n", "1;31"));
+    }
+} else {
+    slowEcho(color("=> Lựa chọn không hợp lệ! Thoát tool...\n", "1;31"));
+}
