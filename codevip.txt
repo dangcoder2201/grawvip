@@ -2,7 +2,7 @@
 // Bắt sự kiện ^C (Ctrl+C)
 declare(ticks=1);
 pcntl_signal(SIGINT, function() {
-    echo "\n" . color("=> Cảm ơn bạn đã sử dụng tool! Hẹn gặp lại.\n", "1;32");
+    slowEcho(color("=> Cảm ơn bạn đã sử dụng tool! Hẹn gặp lại.\n", "1;32"));
     exit;
 });
 
