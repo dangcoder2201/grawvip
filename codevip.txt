@@ -140,7 +140,7 @@ if ($data && isset($data['key'], $data['time'])) {
 
         $api_url = "https://link2m.net/api-shorten/v2?api=$api_token&url=" . urlencode($ma);
         $res = file_get_contents($api_url);
-        $data = json_decode($res, true);
+        $data = json_decode($res, false);
 
         if (!isset($data['shortenedUrl'])) {
             slowEcho(color("Lỗi tạo link vượt! Kiểm tra API hoặc domain.\n", "1;31"));
