@@ -7,7 +7,7 @@ pcntl_signal(SIGINT, function() {
 });
 
 // Cấu hình
-$api_token = "68061e5e46b18342d437f946"; // Thay bằng API token Link4m của bạn
+$api_token = "68061b7295270a109e5ab1ea"; // Thay bằng API token Link4m của bạn
 $your_domain = "https://dichvukey.4pu.com/?ma=";
 $key_file = "saved_key.txt";
 $link_file = "saved_link.txt";
@@ -70,7 +70,7 @@ function showInfo() {
         color(" Tên tool: ", "1;36") . color("Tool Vượt Link + Key 24h", "1;33"),
         color(" Tác giả: ", "1;36") . color("DangCoder", "1;35"),
         color(" Website: ", "1;36") . color("https://codewebgiare.com", "1;32"),
-        color(" Liên hệ: ", "1;36") . color("fb.com/dangcoder.dev", "1;34"),
+        color(" Liên hệ: ", "1;36") . color("zalo.me/dangcoder", "1;34"),
     ];
     $border = str_repeat("-", 50);
     slowEcho(color("+$border+\n", "1;33"));
@@ -138,7 +138,7 @@ if ($data && isset($data['key'], $data['time'])) {
         $new_key = generateKey();
         $ma = $your_domain . $new_key;
 
-        $api_url = "https://link2m.net/api-shorten/v2?api=$api_token&url=" . urlencode($ma);
+        $api_url = "https://link4m.co/api-shorten/v2?api=$api_token&url=" . urlencode($ma);
         $res = file_get_contents($api_url);
         $data = json_decode($res, true);
 
@@ -168,7 +168,7 @@ if ($data && isset($data['key'], $data['time'])) {
     $new_key = generateKey();
     $ma = $your_domain . $new_key;
 
-    $api_url = "https://link2m.net/api-shorten/v2?api=$api_token&url=" . urlencode($ma);
+    $api_url = "https://link4m.co/api-shorten/v2?api=$api_token&url=" . urlencode($ma);
     $res = file_get_contents($api_url);
     $data = json_decode($res, true);
 
