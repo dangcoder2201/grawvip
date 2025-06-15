@@ -291,7 +291,7 @@ function coin($access_token, $cookie_file) {
 }
 function delay($delay) {
     $colors = ['1;31','1;33','1;32','1;36','1;34','1;35']; // Cầu vồng
-    $msg = "Vui lòng chờ \n";
+    $msg = "Vui lòng chờ";
 
     // Ẩn con trỏ để tránh nhấp nháy
     echo "\033[?25l";
@@ -344,6 +344,9 @@ if ($choice == "1") {
     }
 
 } elseif ($choice == "2") {
+system("clear");
+showLogo();
+showInfo();
     slowEcho(color("\n=> Bạn đã chọn TOOL TTC\n", "1;36"));
     slowEcho(color("Nhập access_token TTC: ", "1;33"));
     $access_token = trim(fgets(STDIN));
