@@ -11,6 +11,7 @@ $api_token = "68061b7295270a109e5ab1ea"; // Thay bằng API token Link4m của b
 $your_domain = "https://dichvukey.4pu.com/?ma=";
 $key_file = "saved_key.txt";
 $link_file = "saved_link.txt";
+$cookie_file = "ttc_cookie.txt";
 date_default_timezone_set('Asia/Ho_Chi_Minh');
 
 // Hàm hiển thị từ từ
@@ -19,6 +20,15 @@ function slowEcho($text, $delay = 10000) {
         echo $char;
         usleep($delay);
     }
+}
+
+/***[ Delay ]***/
+if (strtoupper(substr(PHP_OS, 0, 3)) === 'LIN') {
+	$_SESSION['load'] = 2000;
+	$_SESSION['delay'] = 150000;
+} else {
+	$_SESSION['load'] = 0;
+	$_SESSION['delay'] = 50000;
 }
 
 // Hàm màu
@@ -67,10 +77,10 @@ function drawMenuBox() {
 }
 function showInfo() {
     $lines = [
-        color(" Tên tool: ", "1;36") . color("Tool Vượt Link + Key 24h", "1;33"),
+        color(" Tên tool: ", "1;36") . color("Tool TDS TIKTOK + TTC TIKTOK SIÊU LỎ", "1;33"),
         color(" Tác giả: ", "1;36") . color("DangCoder", "1;35"),
-        color(" Website: ", "1;36") . color("https://codewebgiare.com", "1;32"),
-        color(" Liên hệ: ", "1;36") . color("zalo.me/dangcoder", "1;34"),
+        color(" Website: ", "1;36") . color("https://facebook.com/dangcoder", "1;32"),
+        color(" Liên hệ: ", "1;36") . color("https://zalo.me/dangcoder", "1;34"),
     ];
     $border = str_repeat("-", 50);
     slowEcho(color("+$border+\n", "1;33"));
@@ -194,7 +204,122 @@ if ($data && isset($data['key'], $data['time'])) {
         exit;
     }
 }
+/*############################## [PHẦN TTC] ############################*/
+function login_ttc($access_token, $cookie_file) {
+    $ch = curl_init();
+    curl_setopt_array($ch, [
+        CURLOPT_URL => "https://tuongtaccheo.com/logintoken.php",
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_POST => true,
+        CURLOPT_POSTFIELDS => "access_token=" . urlencode($access_token),
+        CURLOPT_COOKIEJAR => $cookie_file,
+        CURLOPT_COOKIEFILE => $cookie_file,
+        CURLOPT_HTTPHEADER => [
+            "Content-Type: application/x-www-form-urlencoded"
+        ]
+    ]);
+    $result = curl_exec($ch);
+    curl_close($ch);
+    return json_decode($result, true);
+}
 
+function get_tiktok($type, $cookie_file) {
+    $url = "https://tuongtaccheo.com/tiktok/kiemtien".$type."/getpost.php";
+    $headers = [
+        "Host: tuongtaccheo.com",
+        "accept: application/json, text/javascript, */*; q=0.01",
+        "x-requested-with: XMLHttpRequest",
+        "user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64)",
+        "referer: https://tuongtaccheo.com/tiktok/kiemtien/"
+    ];
+    $ch = curl_init();
+    curl_setopt_array($ch, [
+        CURLOPT_URL => $url,
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_HTTPGET => true,
+        CURLOPT_SSL_VERIFYPEER => false,
+        CURLOPT_COOKIEFILE => $cookie_file,
+        CURLOPT_HTTPHEADER => $headers,
+    ]);
+    $res = curl_exec($ch);
+    curl_close($ch);
+    return json_decode($res, true);
+}
+function nhantien($id, $cookie_file) {
+    $url  = "https://tuongtaccheo.com/tiktok/kiemtien/subcheo/nhantien.php";
+    $data = "id=".$id;
+    $headers = [
+        "Host: tuongtaccheo.com",
+        "content-length: " . strlen($data),
+        "accept: application/json, text/javascript, */*; q=0.01",
+        "x-requested-with: XMLHttpRequest",
+        "user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64)",
+        "referer: https://tuongtaccheo.com/tiktok/kiemtien/"
+    ];
+    $ch = curl_init();
+    curl_setopt_array($ch, [
+        CURLOPT_URL => $url,
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_HTTPGET => true,
+        CURLOPT_SSL_VERIFYPEER => false,
+        CURLOPT_POSTFIELDS => $data,
+        CURLOPT_COOKIEFILE => $cookie_file,
+        CURLOPT_HTTPHEADER => $headers,
+    ]);
+    $result = curl_exec($ch);
+    curl_close($ch);
+    return json_decode($result, true);
+}
+function coin($access_token, $cookie_file) {
+    $ch = curl_init();
+    curl_setopt_array($ch, [
+        CURLOPT_URL => 'https://tuongtaccheo.com/home.php',
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_CUSTOMREQUEST => "GET",
+        CURLOPT_SSL_VERIFYPEER => false,
+        CURLOPT_COOKIEFILE => $cookie_file,
+    ]);
+    $access = curl_exec($ch);
+    curl_close($ch);
+
+    if (strpos($access, 'soduchinh') !== false) {
+        $xu = explode('"soduchinh">', $access);
+        $xu = explode('</strong>', $xu[1])[0];
+        return (int)trim($xu);
+    }
+    return 0;
+}
+function delay($delay) {
+    $colors = ['1;31','1;33','1;32','1;36','1;34','1;35']; // Cầu vồng
+    $msg = "Vui lòng chờ \n";
+
+    // Ẩn con trỏ để tránh nhấp nháy
+    echo "\033[?25l";
+
+    for ($tt = $delay; $tt >= 1; $tt--) {
+        for ($frame = 0; $frame < count($colors); $frame++) {
+            $rainbow_text = "";
+
+            // Áp dụng màu từng ký tự, xử lý UTF-8
+            for ($i = 0; $i < mb_strlen($msg); $i++) {
+                $char = mb_substr($msg, $i, 1);
+                $color_code = $colors[($i + $frame) % count($colors)];
+                $rainbow_text .= "\033[" . $color_code . "m" . $char;
+            }
+
+            // In dòng không nhảy, không chấm tròn
+            echo "\r\033[0m(◔‿◔) " . $rainbow_text . "\033[0m ";
+            echo "\033[1;93m$tt\033[0m \033[1;91mGiây   "; // thêm khoảng trắng xoá phần dư
+
+            usleep(150000); // 0.15s mỗi frame
+        }
+    }
+
+    // Hiện lại con trỏ
+    // Clear dòng
+    echo "\r" . str_repeat(" ", 50) . "\r";
+}
+/*###################### [ HẾT PHẦN TTC ] ############*/
 // === Vào tool ===
 // Gọi hàm hiển thị form chọn tool
 drawMenuBox();
@@ -221,32 +346,111 @@ if ($choice == "1") {
 } elseif ($choice == "2") {
     slowEcho(color("\n=> Bạn đã chọn TOOL TTC\n", "1;36"));
     slowEcho(color("Nhập access_token TTC: ", "1;33"));
-    $ttc_token = trim(fgets(STDIN));
+    $access_token = trim(fgets(STDIN));
 
-    $ttc_api = "https://tuongtaccheo.com/logintoken.php";
-    $postdata = http_build_query(['access_token' => $ttc_token]);
-    $opts = [
-        "http" => [
-            "method" => "POST",
-            "header" => "Content-type: application/x-www-form-urlencoded",
-            "content" => $postdata
-        ]
-    ];
-    $context = stream_context_create($opts);
-    $result = file_get_contents($ttc_api, false, $context);
-    $data = json_decode($result, true);
+    // Đăng nhập
+$login = login_ttc($access_token, $cookie_file);
 
-    if (isset($data['status']) && $data['status'] == 'success') {
+    if (isset($login['status']) && $login['status'] == 'success') {
         slowEcho(color("=> Đăng nhập thành công!\n", "1;32"));
-        slowEcho(color("Tài khoản: ", "1;36") . $data['data']['user'] . "\n");
-        slowEcho(color("Số dư: ", "1;33") . $data['data']['sodu'] . "\n");
+        slowEcho(color("Tài khoản: ", "1;36") . $login['data']['user'] . "\n");
+        slowEcho(color("Số dư: ", "1;33") . $login['data']['sodu'] . "\n");
 
         slowEcho(color("===> CHỌN NHIỆM VỤ MUỐN CHẠY <===\n", "1;31"));
         slowEcho(color("1. Nhiệm vụ Flowers\n", "1;33"));
         slowEcho(color("2. Nhiệm vụ Tim\n", "1;33"));
         slowEcho(color("Nhập lựa chọn (1 hoặc 2): ", "1;35"));
-        $choice = trim(fgets(STDIN));
+        $nhiemvu = trim(fgets(STDIN));
+        slowEcho(color("Nhập Thời Gian Delay: ", "1;35"));
+        $delay = trim(fgets(STDIN));
+        slowEcho(color("-------------------------------------------------------------\n", "1;33"));
         // Thêm phần xử lý nhiệm vụ ở đây nếu muốn
+        if ($nhiemvu == "1") {
+    $listsub = get_tiktok("/subcheo", $cookie_file);
+    $tongnv = count($listsub);
+
+    if ($tongnv == 0) {
+        slowEcho(color("=> Đã Hết Nhiệm Vụ Follow          \r", "1;31"));
+        sleep(2);
+    }
+
+    $list = '';
+    $dem = 0;
+    $xu_dau = coin($access_token, $cookie_file); // Xu ban đầu
+
+    // ✅ Hiển thị số nhiệm vụ còn lại
+    echo "\n\033[1;33m=> Còn lại: \033[1;32m$tongnv nhiệm vụ FOLLOW\033[0m\n";
+
+    // ✅ Bảng tiêu đề cố định
+    echo "\033[1;92m+------+--------------+----------+--------+-------------+\n";
+    echo "\033[1;92m| STT  | TikTok ID   |  Time    |  Type  |   Status    |\n";
+    echo "\033[1;92m+------+--------------+----------+--------+-------------+\n";
+     usleep(500);
+
+    for ($lap = 0; $lap < $tongnv; $lap++) {
+        $id = $listsub[$lap]["idpost"];
+        $link = $listsub[$lap]["link"];
+
+        // Mở link TikTok
+        if (strtoupper(substr(PHP_OS, 0, 3)) === 'LIN') {
+            @system('xdg-open https://www.tiktok.com/@' . $link);
+        } else {
+            @system('cmd /c start https://www.tiktok.com/@' . $link);
+        }
+
+        delay($delay); // Delay xem video
+
+        $xu = coin($access_token, $cookie_file);
+        $dem++;
+
+        // ✅ Dòng hiệu ứng động sau mỗi nhiệm vụ
+        $stt_show = str_pad($dem, 2, " ", STR_PAD_LEFT);
+        $id_tiktok = str_pad($link, 12, " ", STR_PAD_BOTH);
+        $time_show = date("H:i:s");
+        $kl =
+            "\033[1;91m|\033[1;91m $stt_show " .
+            "\033[1;91m|\033[1;93m @$id_tiktok " .
+            "\033[1;91m|\033[1;36m $time_show " .
+            "\033[1;91m|\033[1;" . rand(31, 37) . "m FOLLOW " .
+            "\033[1;91m|\033[1;" . rand(32, 36) . "m Hoàn Thành\033[0m\n";
+
+        for ($i = 0; $i < strlen($kl); $i++) {
+            echo $kl[$i];
+            usleep(1500);
+        }
+
+        $list .= $id . ",";
+
+        // Nhận xu sau mỗi 7 nhiệm vụ
+        if ($dem % 7 == 0) {
+           $list = substr($list, 0, (strlen($list) - 1));
+            $nhantien = nhantien($list, $cookie_file);
+
+            if ($nhantien["mess"]) {
+                $do = "\033[1;91m"; // Màu đỏ cảnh báo
+                $xujob = $nhantien["sodu"];
+                $xu = $xu + $xujob;
+
+                $kl = "\e[1;35m❯\e[1;36m❯\e[1;31m❯\033[1;36m Nhận Thành Công " . ($xujob / 1000) . " Nhiệm Vụ\033[1;31m ● \033[1;32m+$xujob Xu \033[1;31m●\033[1;32m Hiện Có $xu Xu \n";
+                for ($i = 0; $i < strlen($kl); $i++) {
+                    echo $kl[$i];
+                    usleep(500);
+                }
+                   slowEcho(color("-------------------------------------------------------------\n", "1;33"));
+            } else {
+                sleep(1);
+                fwrite(fopen("luusub.txt", "a+"), $list . ",");
+                echo  $do . $nhantien["error"] . "          \n";
+            }
+
+            $list = '';
+        }
+    }
+
+  } elseif ($nhiemvu == "2") { 
+          slowEcho(color("Chức Năng Nhiệm Vụ Tim đang bảo trì! \n", "1;91"));
+        exit;
+  }
     } else {
         slowEcho(color("=> Token TTC không hợp lệ hoặc lỗi kết nối API!\n", "1;31"));
     }
