@@ -122,6 +122,8 @@ function loadLink() {
 }
 
 // Bắt đầu
+print(">> Loading...");
+sleep(1);
 system("clear");
 showLogo();
 showInfo();
