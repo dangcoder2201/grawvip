@@ -18,7 +18,7 @@ date_default_timezone_set('Asia/Ho_Chi_Minh');
 function slowEcho($text, $delay = 0.5) {
     foreach (str_split($text) as $char) {
         echo $char;
-        sleep($delay);
+        usleep($delay * 1000000); // 0.5s = 500000 micro giây
     }
 }
 
