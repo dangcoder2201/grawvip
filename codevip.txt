@@ -123,7 +123,7 @@ function loadLink() {
 
 // Bắt đầu
 print(">> Loading...");
-sleep(1);
+sleep(3);
 system("clear");
 showLogo();
 showInfo();
