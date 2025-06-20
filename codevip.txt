@@ -15,10 +15,10 @@ $cookie_file = "ttc_cookie.txt";
 date_default_timezone_set('Asia/Ho_Chi_Minh');
 
 // Hàm hiển thị từ từ
-function slowEcho($text, $delay = 0.5) {
+function slowEcho($text, $delay = 1000000) {
     foreach (str_split($text) as $char) {
         echo $char;
-        usleep($delay * 1000000); // 0.5s = 500000 micro giây
+        usleep($delay);
     }
 }
 
