@@ -107,9 +107,9 @@ def parse_cookie_string(cookie_str):
     return {item.split("=")[0]: "=".join(item.split("=")[1:]) for item in cookie_str.split("; ")}
 
 def create_headers(cookie_str, referer_link="https://x.com/"):
+def create_headers(cookie_str, referer_link="https://x.com/"):
     cookies = parse_cookie_string(cookie_str)
     return {
-        "authorization": author,
         "x-csrf-token": cookies.get("ct0", ""),
         "x-twitter-auth-type": "OAuth2Session",
         "x-twitter-active-user": "yes",
