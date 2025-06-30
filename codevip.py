@@ -310,23 +310,27 @@ while True:
     while retry_count < max_retries:
         try:
             nhanjob = nhannv(account_id)
-if nhanjob:
-    if nhanjob.get("status") == 401:
-        print(f"\033[1;31m Token hoặc Authorization hết hạn! Thoát tool.")
-        exit()
-    if nhanjob.get("status") == 200:
-        data_job = nhanjob.get("data", {})
-        if data_job.get("link") and data_job.get("object_id"):
-            break  # Có job, thoát khỏi retry
-        else:
-            retry_count += 1
-            time.sleep(2)
-    elif nhanjob.get("status") == 404:
-        print(f"\033[1;33m 💤 Hết job rồi! Vui lòng đợi 30 phút rồi thử lại nhé.")
-        exit()
-    else:
-        retry_count += 1
-        time.sleep(2)
+
+            if nhanjob:
+                if nhanjob.get("status") == 401:
+                    print(f"\033[1;31m Token hoặc Authorization hết hạn! Thoát tool.")
+                    exit()
+                if nhanjob.get("status") == 200:
+                    data_job = nhanjob.get("data", {})
+                    if data_job.get("link") and data_job.get("object_id"):
+                        break  # Có job, thoát retry
+                    else:
+                        retry_count += 1
+                        time.sleep(2)
+                elif nhanjob.get("status") == 404:
+                    print(f"\033[1;33m 💤 Hết job rồi! Vui lòng đợi 30 phút rồi thử lại nhé.")
+                    exit()
+                else:
+                    retry_count += 1
+                    time.sleep(2)
+            else:
+                retry_count += 1
+                time.sleep(1)
 
         except Exception as e:
             retry_count += 1
