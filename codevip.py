@@ -327,9 +327,7 @@ if nhanjob:
     else:
         retry_count += 1
         time.sleep(2)
-else:
-    retry_count += 1
-    time.sleep(1)
+
         except Exception as e:
             retry_count += 1
             time.sleep(1)
