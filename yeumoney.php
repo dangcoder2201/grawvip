@@ -196,7 +196,7 @@ for ($i = 0; $i <= 100; $i++) {
 }
 sleep(2);
 system("clear");
-echo "\033[1;31m[●] Đang Tiến Hành Vào Tool...... \033[0m/n";
+echo "\033[1;31m[●] Đang Tiến Hành Vào Tool...... \033[0m\n";
 sleep(5);
 system("clear");
 showLogo();
