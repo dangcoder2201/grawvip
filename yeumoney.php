@@ -131,10 +131,19 @@ function shortenLink4m($apiToken, $destinationUrl) {
     }
 }
 
-function getDeviceId() {
+function Noget() {
     $output = shell_exec('termux-info | grep "Device ID"');
     if (!$output) $output = shell_exec('getprop ro.serialno');
     return trim(md5($output));
+}
+
+function getDeviceId() {
+    $androidId = shell_exec('settings get secure android_id');
+    $serial    = shell_exec('getprop ro.serialno');
+    $brand     = shell_exec('getprop ro.product.brand');
+    $model     = shell_exec('getprop ro.product.model');
+    $combined  = trim($androidId . $serial . $brand . $model);
+    return md5($combined);
 }
 
 function getIP() {
