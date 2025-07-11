@@ -265,7 +265,7 @@ clearLine($text);
     //echo color("🌐 Link: ", "1;36") . color("$link\n", "1;34");
     system("termux-open-url '$link'");
 
-   delay($delay);
+   delaygl($delay);
 
     // Gọi lần 1
     $hoanthanh = completeJob($author, $token, $jobId, $tiktokId);
@@ -446,8 +446,7 @@ function baoloi($auth, $token, $ads_id, $object_id, $account_id, $loai = 'tiktok
 }
 
 //HÀM DELAY
-if (!function_exists('delay')) {
-function delay($delay) {
+function delaygl($delay) {
     $colors = ['1;31','1;33','1;32','1;36','1;34','1;35']; // Cầu vồng
     $msg = "Vui lòng chờ";
 
@@ -469,7 +468,7 @@ function delay($delay) {
 
             usleep(150000); // 0.15s mỗi frame
         }
-    }
+    
 
     // Hiện lại con trỏ
     // Clear dòng
