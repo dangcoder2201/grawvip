@@ -10,18 +10,23 @@ pcntl_signal(SIGINT, function() {
 
 
 // Hàm hiển thị từ từ
+if (!function_exists('slowEcho')) {
 function slowEcho($text, $delay = 500) {
     foreach (str_split($text) as $char) {
         echo $char;
         usleep($delay);
     }
+ }
 }
 
-
 // Hàm màu
+if (!function_exists('color')) {
 function color($text, $color_code) {
     return "\033[".$color_code."m".$text."\033[0m";
 }
+}
+
+if (!function_exists('rainbow')) {
 function rainbow($text) {
     $colors = ['1;31','1;33','1;32','1;36','1;34','1;35'];
     $out = '';
@@ -32,8 +37,9 @@ function rainbow($text) {
     }
     return $out . "\033[0m";
 }
-
+}
 // Logo & Info
+if (!function_exists('showLogo')) {
 function showLogo() {
     $logo = <<<LOGO
 ______  ___   _   _ _____  _____ ___________ ___________  
@@ -45,7 +51,9 @@ ______  ___   _   _ _____  _____ ___________ ___________
 LOGO;
     slowEcho(rainbow($logo) . "\n", 500); // hiển thị logo với tốc độ chậm hơn
 }
+}
 //Lựa Chọn TOOL
+if (!function_exists('showInfo')) {
 function showInfo() {
     $lines = [
         color(" Tên tool: ", "1;36") . color("Tool TDS TIKTOK + TTC TIKTOK SIÊU LỎ", "1;33"),
@@ -62,16 +70,9 @@ function showInfo() {
     }
     slowEcho(color("+$border+\n", "1;33"));
 }
-
-// Key
-function checkInternet() {
-    if (!$sock = @fsockopen('www.google.com', 80)) {
-        echo color("❌ Vui lòng bật kết nối mạng.\n", "1;31");
-        exit;
-    } else {
-        fclose($sock);
-    }
 }
+// Key
+
 
 
 // Bắt đầu
