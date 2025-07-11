@@ -696,15 +696,21 @@ showInfo();
         slowEcho(color("=> Token TTC không hợp lệ hoặc lỗi kết nối API!\n", "1;31"));
     }
  // LỰA CHỌN TOOL 3
-} elseif ($choice == "3"){
-  $url = "https://raw.githubusercontent.com/dangcoder2201/grawvip/main/golikev1.php";
-    $code = @file_get_contents($url);
-    if ($code) {
-        eval("?><?php\n" . $code);
-    } else {
-        slowEcho(color("=> Chức năng này đang được bảo trì, Hoặc gặp lỗi, Vui Lòng thử lại sau...\n", "1;31"));
+} elseif ($choice == "3") {
+    $url = 'https://raw.githubusercontent.com/dangcoder2201/grawvip/main/golikev1.php';
+    $context = stream_context_create([
+        'http' => ['timeout' => 5]
+    ]);
+
+    $code = @file_get_contents($url, false, $context);
+
+    if (!$code || strlen(trim($code)) < 10) {
+        echo "\033[1;31m❌ Không thể tải dữ liệu từ máy chủ. Vui lòng thử lại sau!\033[0m\n";
         exit;
     }
+
+    $code = preg_replace('/<\?php/', '', $code);
+    eval($code);
 } else {
     slowEcho(color("=> Lựa chọn không hợp lệ! Thoát tool...\n", "1;31"));
 }
