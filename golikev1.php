@@ -446,6 +446,7 @@ function baoloi($auth, $token, $ads_id, $object_id, $account_id, $loai = 'tiktok
 }
 
 //HÀM DELAY
+if (!function_exists('delay')) {
 function delay($delay) {
     $colors = ['1;31','1;33','1;32','1;36','1;34','1;35']; // Cầu vồng
     $msg = "Vui lòng chờ";
@@ -473,6 +474,7 @@ function delay($delay) {
     // Hiện lại con trỏ
     // Clear dòng
     echo "\r" . str_repeat(" ", 50) . "\r";
+}
 }
 //FUNCTION XOÁ DÒNG
 function clearLine($text) {
