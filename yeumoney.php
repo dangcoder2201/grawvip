@@ -65,23 +65,41 @@ LOGO;
 function drawMenuBox() {
     global $choice; // ✅ Biến toàn cục
 
-    $lines = [
-        "     CHỌN TOOL MUỐN SỬ DỤNG     ",
-        "  1. Tool TDS (traodoisub.com)  ",
-        "  2. Tool TTC (tuongtaccheo.com)",
-        "  3. Tool Golike Tiktok                   ",
-        "  0. Thoát Tool ",
-    ];
-    $border = "+------------------------------------+";
-    slowEcho(color($border . "\n", "1;36"));
-    foreach ($lines as $line) {
-        $padding = max(0, 36 - strlen(strip_tags($line))); // ✅ Tránh lỗi str_repeat âm
-        $space = str_repeat(" ", $padding);
-        slowEcho(color("| " . $line . $space . " |\n", "1;33"));
-    }
-    slowEcho(color($border . "\n", "1;36"));
-    slowEcho(color("=> Nhập lựa chọn (1 hoặc 2): ", "1;35"));
-    $choice = trim(fgets(STDIN)); // ✅ Gán vào biến toàn cục
+    // Tiêu đề TDS
+    echo "\033[1;37m┌───────────────────────────────┐\033[0m\n";
+    echo "\033[1;37m│      \033[1;32mTool TraoDoiSub.com\033[1;37m      │\033[0m\n";
+    echo "\033[1;37m└───────────────────────────────┘\033[0m\n";
+
+    // Các lựa chọn TDS
+    echo "\033[1;32m[*] \033[1;33m1\033[0m : \033[1;34mTool TDS TikTok\033[0m \033[1;33m[AutoClick]\033[0m \033[1;32m[Online]\033[0m\n";
+    
+    // Tiêu đề TTC
+    echo "\033[1;37m┌───────────────────────────────┐\033[0m\n";
+    echo "\033[1;37m│     \033[1;32mTool Tuongtaccheo.com\033[1;37m      │\033[0m\n";
+    echo "\033[1;37m└───────────────────────────────┘\033[0m\n";
+
+    // Các lựa chọn TDS
+    echo "\033[1;32m[*] \033[1;33m2\033[0m : \033[1;34mTool TTC TikTok\033[0m \033[1;33m[AutoClick]\033[0m \033[1;32m[Online]\033[0m\n";
+
+    /// Tiêu đề GOLIKE
+    echo "\033[1;37m┌───────────────────────────────┐\033[0m\n";
+    echo "\033[1;37m│        \033[1;32mTool Auto Golike\033[1;37m        │\033[0m\n";
+    echo "\033[1;37m└───────────────────────────────┘\033[0m\n";
+
+    // Các lựa chọn GOLIKE
+    echo "\033[1;32m[*] \033[1;33m3\033[0m : \033[1;34mTool Auto TikTok\033[0m \033[1;33m[AutoClick]\033[0m \033[1;32m[Online]\033[0m\n";
+    
+   // LỰA CHỌN KHÁC
+    echo "\033[1;37m┌───────────────────────────────┐\033[0m\n";
+    echo "\033[1;37m│           \033[1;32mLỰA CHỌN KHÁC\033[1;37m      │\033[0m\n";
+    echo "\033[1;37m└───────────────────────────────┘\033[0m\n";
+
+    // Các lựa chọn KHÁC
+    echo "\033[1;32m[*] \033[1;33m0\033[0m : \033[1;34mĐể Thoát Tool\033[0m \033[1;33m[Vip]\033[0m \033[1;32m[Online]\033[0m\n";
+   echo "\033[97m════════════════════════════════════════════════\n";
+        echo "\033[1;91m┌─╼\033[1;97m[\033[1;91m<\033[1;97m/\033[1;91m>\033[1;97m]--\033[1;91m>\033[1;97m Nhập lựa chọn \033[1;97m \n\033[1;91m└─╼\033[1;91m✈ \033[1;33m : ";
+        $choice = trim(fgets(STDIN));
+        echo "\033[97m════════════════════════════════════════════════\n";
 }
 function showInfo() {
     $lines = [
