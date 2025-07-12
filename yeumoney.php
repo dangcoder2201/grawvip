@@ -255,7 +255,8 @@ if (file_exists($keyFile)) {
                 echo color("🔐 Key VIP đã lưu hợp lệ.\n", "1;32");
                 echo color("⏳ Còn hạn: $timeLeft (Hết hạn: $formattedDate)\n", "1;36");
                 echo color("➡️ Đăng nhập thành công!\n", "1;32");
-                drawMenuBox();
+                echo "\033[97m════════════════════════════════════════════════\n";
+		drawMenuBox();
                 handleTool();
                 exit;
             } else {
@@ -274,7 +275,8 @@ if (file_exists($keyFile)) {
                 echo color("\n🔓 Key Free còn hạn: $timeLeft\n", "1;36");
                 echo color("🌐 IP của bạn: $ip\n", "1;34");
                 echo color("➡️ Đăng nhập thành công!\n", "1;32");
-                drawMenuBox();
+                echo "\033[97m════════════════════════════════════════════════\n";
+		drawMenuBox();
                 handleTool();
                 exit;
             } else {
